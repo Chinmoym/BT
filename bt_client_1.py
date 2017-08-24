@@ -22,7 +22,7 @@ client = bluetooth.BluetoothSocket( bluetooth.RFCOMM )
 client.connect((target_address, port))
 
 
-print("connected.")
+print("connected")
 try:
         while True:
                 RxData = ast.literal_eval(client.recv(1024))

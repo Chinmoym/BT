@@ -5,6 +5,7 @@ import ast
 #Global variables
 BTPortNo = 3
 TargetAddress = None
+#dummy command list to test
 command_list = ["['detectall']",\
 		"['initialize',0x10]",\
 		"['getinfo',0x10]",\

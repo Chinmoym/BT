@@ -50,7 +50,7 @@ class BMP085(object):
         # Create I2C device.
         self._device = i2c.get_i2c_device(address, **kwargs)
         # Load calibration values.
-        #self._load_calibration()
+        self._load_calibration()
 
     def _load_calibration(self):
         self.cal_AC1 = self._device.readS16BE(BMP085_CAL_AC1)   # INT16

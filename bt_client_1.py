@@ -1,21 +1,27 @@
 import bluetooth
-#import subprocess #required for chip only
+import subprocess #required for chip only
 import ast
+
+from time import sleep
 
 #Global variables
 BTPortNo = 3
 TargetAddress = None
 #dummy command list to test
-command_list = ["['detectall']",\
-		"['initialize',0x10]",\
-		"['getinfo',0x10]",\
-		"['readfrom',0x10,0x30]",
-		"['writeto',0x10,0x30,0xff]",\
-		"quit"
+command_list = ['[\"detectall\"]',\
+		'[\"initialize\",0x77]',\
+		'[\"getinfo\",0x77]',\
+		'[\"readfrom\",0x77,0xF4]',\
+		'[\"writeto\",0x77,0xF4,0x34]',\
+		'[\"readfrom\",0x77,0xF4]',\
+		'[\"Get_Temp\"]',\
+		'[\"Get_Pressure\"]',\
+		"quit"\
 		]
 
+
 #make the bluetooth device discoverable
-#subprocess.call(['sudo','hciconfig','hci0','piscan'])
+subprocess.call(['sudo','hciconfig','hci0','piscan'])
 
 #main function/code
 if __name__ == "__main__":
@@ -39,17 +45,71 @@ if __name__ == "__main__":
 		client = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
 		client.connect((TargetAddress,BTPortNo))
 		print("connected to ",TargetAddress)
+		print ""
 		try:
-			for indx in range(0,5):
+			for command in command_list	:
 				#command = raw_input()
-				command  = command_list[indx]
-				client.send(command)
+
 				if command == "quit":
 					print("Quit command")
 					client.close()
-				print(command)
+				client.send(command)
+
+				print command
+
+
+				if command == command_list[0]:				#detectall
+					add_list = client.recv(1024)
+					add_list = ast.literal_eval(add_list)
+					for add in add_list:
+						print add
+					print ""
+
+
+				elif command == command_list[1]:			#initialize
+					Ack_packet = client.recv(1024)
+					print Ack_packet
+					print ""
+
+				elif command == command_list[2]:			#getinfo
+					Dev_info = client.recv(1024)
+					print  "Device name is " + ast.literal_eval(Dev_info)[0]
+					Dev_info = ast.literal_eval(ast.literal_eval(Dev_info)[1])
+					print "Available Registers and commands are:" 
+					print Dev_info[0]
+					print Dev_info[1]
+					print Dev_info[2]
+					print ""
+
+				elif command == command_list[3]:			#readfrom
+					Register = client.recv(1024)
+					#print Register
+					print "Value of Register " + ast.literal_eval(Register)[1] + " Of Device at add " + ast.literal_eval(Register)[0] +" is " + ast.literal_eval(Register)[2]
+					print ""
+
+				elif command == command_list[4]:			#writeto
+					print client.recv(1024)
+					print ""
+
+				elif command == command_list[5]:			#readfrom
+					Register = client.recv(1024)
+					print "Value of Register " + ast.literal_eval(Register)[1] + " Of Device at add " + ast.literal_eval(Register)[0] +" is " + ast.literal_eval(Register)[2]
+					print ""	
+
+				elif command == command_list[6]:			#get temperature
+					print "Temperature is " + ast.literal_eval(client.recv(1024))[0] + " degree celcius"
+					print ""
+				
+				elif command == command_list[7]:			#get pressure
+					print "Pressure is " + ast.literal_eval(client.recv(1024))[0] + "Pa"
+					print ""
+
+
+
+
+				sleep(1)
 		except KeyboardInterrupt:
 			print("Shutting down...")
 			client.close()
 		except:
-			client.close()
+client.close()

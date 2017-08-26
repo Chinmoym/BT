@@ -2,6 +2,7 @@
 import bluetooth
 import subprocess
 import ast
+import sensor_top
 
 #Global variables
 RxBuffSize = 4096
@@ -26,8 +27,6 @@ if __name__ == "__main__":
 		while True:
 			RxData = client.recv(RxBuffSize)
 			print(RxData)
-			Rx = ast.literal_eval(RxData)
-			print(Rx)
 			#end the connection from master
 			if RxData=="quit":
 				print("Master disconnected")
@@ -36,6 +35,53 @@ if __name__ == "__main__":
 				print("Waiting for connection from master [RFCOMM port=%d]" % BTPortNo)
 				client,client_info = server.accept()
 				print("Connected to",client_info)
+			
+			Rx = ast.literal_eval(RxData)
+
+			if Rx[0]=="detectall":
+				data = sensor_top.detectall()
+				data = format(data, '#04X')
+				data_send = '[\"' + str(data)+'\"]'
+				client.send(data_send)
+
+			elif Rx[0]=="getinfo":
+				print(Rx[1])
+				info = sensor_top.getinfo(Rx[1])
+				client.send(info)
+
+			elif Rx[0]=="readfrom":
+				data = sensor_top.read_from(Rx[1],Rx[2])
+				data = format(data, '#04X')
+				ret1 = str(format(Rx[1], '#04X'))
+				ret2 = str(format(Rx[2], '#04X'))
+				data_send = '[\"' + ret1 + '\",\"' + ret2 +'\", \"' + str(data) + '\"]'
+				client.send(data_send)
+
+			elif Rx[0]=="writeto":
+				sensor_top.write_to(Rx[1],Rx[2],Rx[3])
+				client.send("Write OK")
+
+			elif Rx[0]=="initialize":
+				data = format(Rx[1], '#04X')
+				data_send =  str(data) + ' is initialized' 
+				client.send(data_send)
+
+			elif Rx[0]=="Get_Temp":
+				data = sensor_top.get_temperature()
+				data_send = '[\"' + str(data) + '\"]'
+				client.send(data_send)
+
+			elif Rx[0]=="Get_Pressure":
+                                data = sensor_top.get_pressure()
+                                data_send = '[\"' + str(data) + '\"]'
+				print(data_send)           
+                                client.send(data_send)
+
+				
+			else:
+				client.send("Wrong Input")
+				print("Wrong input received")
+				
 	#handle exceptions/ctrl + c
 	except KeyboardInterrupt:
 		print("Shutting down...")
@@ -44,5 +90,3 @@ if __name__ == "__main__":
 	except:
 		client.close()
 		server.close()		
-		
-	

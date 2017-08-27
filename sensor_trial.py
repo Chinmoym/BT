@@ -148,15 +148,4 @@ class BMP085(object):
         p = p + ((X1 + X2 + 3791) >> 4)
         return p
 
-	info = ("name = BMP085","READ_TEMPCMD=0X2E","READ_PRESSURECMD=0X34","UT_VALUE=0xF6")
-
-
-sensor = BMP085()
-
-for x in range (1,10):
-    temp = sensor.read_temperature()
-    pressure = sensor.read_pressure()
-    print("temperature = ",temp)
-    print("pressure = ",pressure)
-    time.sleep(1)
-
+    info = "['BMP085','[[\"0xF4\",\"CONTROL_REG\"],[\"0x2E\",\"READ_TEMPCMD\"],[\"0x34\",\"READ_PRESSURECMD\"],[\"0xF6\",\"UT_VALUE\"],[\"0xAA:0XBF\",\"E2_PROM\"]]']"

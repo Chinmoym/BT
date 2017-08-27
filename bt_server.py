@@ -40,8 +40,7 @@ if __name__ == "__main__":
 
 			if Rx[0]=="detectall":
 				data = sensor_top.detectall()
-				data = format(data, '#04X')
-				data_send = '[\"' + str(data)+'\"]'
+				data_send = '[\"' + data +'\"]'
 				client.send(data_send)
 
 			elif Rx[0]=="getinfo":
@@ -52,7 +51,7 @@ if __name__ == "__main__":
 			elif Rx[0]=="readfrom":
 				data = sensor_top.read_from(Rx[1],Rx[2])
 				data = format(data, '#04X')
-				ret1 = str(format(Rx[1], '#04X'))
+				ret1 = Rx[1]
 				ret2 = str(format(Rx[2], '#04X'))
 				data_send = '[\"' + ret1 + '\",\"' + ret2 +'\", \"' + str(data) + '\"]'
 				client.send(data_send)
@@ -62,8 +61,8 @@ if __name__ == "__main__":
 				client.send("Write OK")
 
 			elif Rx[0]=="initialize":
-				data = format(Rx[1], '#04X')
-				data_send =  str(data) + ' is initialized' 
+				sensor_top.initialize(Rx[1])
+				data_send =  Rx[1] + ' is initialized' 
 				client.send(data_send)
 
 			elif Rx[0]=="Get_Temp":
@@ -76,12 +75,12 @@ if __name__ == "__main__":
                                 data_send = '[\"' + str(data) + '\"]'
 				print(data_send)           
                                 client.send(data_send)
-
 				
 			else:
 				client.send("Wrong Input")
 				print("Wrong input received")
 				
+
 	#handle exceptions/ctrl + c
 	except KeyboardInterrupt:
 		print("Shutting down...")
@@ -90,3 +89,6 @@ if __name__ == "__main__":
 	except:
 		client.close()
 		server.close()		
+		
+	
+

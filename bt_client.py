@@ -9,11 +9,11 @@ BTPortNo = 3
 TargetAddress = None
 #dummy command list to test
 command_list = ['[\"detectall\"]',\
-		'[\"initialize\",0x77]',\
-		'[\"getinfo\",0x77]',\
-		'[\"readfrom\",0x77,0xF4]',\
-		'[\"writeto\",0x77,0xF4,0x34]',\
-		'[\"readfrom\",0x77,0xF4]',\
+		'[\"initialize\",\"BMP085\"]',\
+		'[\"getinfo\",\"BMP085\"]',\
+		'[\"readfrom\",\"BMP085\",0xF4]',\
+		'[\"writeto\",\"BMP085\",0xF4,0x34]',\
+		'[\"readfrom\",\"BMP085\",0xF4]',\
 		'[\"Get_Temp\"]',\
 		'[\"Get_Pressure\"]',\
 		"quit"\
@@ -79,6 +79,8 @@ if __name__ == "__main__":
 					print Dev_info[0]
 					print Dev_info[1]
 					print Dev_info[2]
+					print Dev_info[3]
+					print Dev_info[4]
 					print ""
 
 				elif command == command_list[3]:			#readfrom
@@ -112,4 +114,4 @@ if __name__ == "__main__":
 			print("Shutting down...")
 			client.close()
 		except:
-client.close()
+			client.close()

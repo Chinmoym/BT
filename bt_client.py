@@ -36,8 +36,8 @@ if __name__ == "__main__":
 		if name=="chip":
 			print("Connecting to chip")
 			TargetAddress = device
-			#services = bluetooth.find_Service(address=target_address)
-			#print(services)
+			services = bluetooth.find_service(address=TargetAddress)
+			print(services)
 			break
 	if TargetAddress == None:
 		print("No chip device avaialble")

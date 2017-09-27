@@ -1,3 +1,5 @@
+#Implementation of functions used in bt_server.py
+
 import Adafruit_GPIO.I2C as I2C
 import sensor_trial
 import smbus_scan
@@ -47,9 +49,9 @@ def get_pressure(device_addr):
 
 
 ##This is for debugging
-print(detectall())
+"""print(detectall())
 
-"""print(getinfo(0x77))
+print(getinfo(0x77))
 time.sleep(1)
 print(initialize(0x77))
 time.sleep(1)
@@ -68,8 +70,5 @@ for i in range(1,5):
         write_to(0x77,0xF4,0x34)
         print(read_from(0x77,0xF6))
         time.sleep(0.5)"""
-
-        time.sleep(0.5)"""
-		
 
 

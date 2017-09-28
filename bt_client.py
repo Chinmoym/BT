@@ -10,6 +10,7 @@ from time import sleep
 ###########################################################################################################
 		## Global variables
 BTPortNo = 3
+#TargetMACAddress = 'A0:2C:36:9D:D3:AF' 
 TargetMACAddress = '68:17:29:45:5F:32'
 AddressList = ''
 client = ''
@@ -24,52 +25,51 @@ subprocess.call(['sudo','hciconfig','hci0','piscan'])
 # detectall command
 # sysntax : detectall
 def detectall():
-	client.send("detectall")
-	AddressList = client.recv(1024)
-	AddressList = ast.literal_eval(AddressList)
+	command = '[\"detectall\",\"\"]'
+	client.send(command)
+	try:
+		AddressList = client.recv(1024)
+	except:
+		print("error recieving")	
+	#AddressList = ast.literal_eval(AddressList)
 	print(AddressList)	
 
 # initialize command
 # syntax : initialize [address]
-def initialize():
-	print("Enter address of device to initialize:")
-	DeviceAddress = raw_input()
+'''def initialize():
+	DeviceAddress = raw_input("Enter address of device to initialize:")
 	command = '["initialize",'+DeviceAddress+']'##################################################################################
 	client.send(command)
 	Ack = client.recv(1024)
 	print Ack
-
+'''
 # getinfo command
 # syntax : getinfo [device address]
 def getinfo():
-	print("Enter device address for device info:")
-	DeviceAddress = raw_input()
-	command = '["getinfo",'+DeviceAddress+']'############################################
+	DeviceAddress = raw_input("Enter device address for device info:")
+	command = '[\"getinfo\",\"'+DeviceAddress+'\"]'
 	client.send(command)
 	DeviceInfo = client.recv(1024)
-	DeviceInfo = ast.literal_eval(DeviceInfo)
+	#DeviceInfo = ast.literal_eval(DeviceInfo)
 	print(DeviceInfo)
 
 # readform command
 # syntax : readfrom [device address] [register address]
 def readfrom():
-	print("Enter device address:")
-	DeviceAddress = raw_input()
-	print("Enter register address:")
-	RegisterAddress = raw_input()
-	command = '["readfrom",'+DeviceAddress+','+RegisterAddress+']'#########################################
+	DeviceAddress = raw_input("Enter device address:")
+	RegisterAddress = raw_input("Enter register address:")
+	command = '[\"readfrom\",\"'+DeviceAddress+'\",\"'+RegisterAddress+'\"]'
 	client.send(command)
 	RegisterValue = client.recv(1024)
 	print(RegisterValue)
 
 # writeto command
-# syntax: writeto [device address][register address]
+# syntax: writeto [device address][register address][Value]
 def writeto():
-	print("Enter device address:")
-	DeviceAddress = raw_input()
-	print("Enter register address:")
-	RegisterAddress = raw_input()
-	command = '["writeto",'+DeviceAddress+','+RegisterAddress+']'##########################################
+	DeviceAddress = raw_input("Enter device address:")
+	RegisterAddress = raw_input("Enter register address:")
+	Value = raw_input("Enter value to be written:")
+	command = '[\"writeto\",\"'+DeviceAddress+'\",\"'+RegisterAddress+'\",\"'+Value+'\"]'
 	client.send(command)
 	WriteAck = client.recv(1024)
 	print(WriteAck)
@@ -78,10 +78,10 @@ def writeto():
 ##########################################################################################################
 		## command dictionary to lookup
 command_dictionary = {   "detectall" 	: detectall, \
-			"initialize" 	: initialize, \
+#			"initialize" 	: initialize, \
 			"getinfo"	: getinfo, \
 			"readfrom"	: readfrom, \
-			"writeto"	: writeto\
+			"writeto"	: writeto \
 		    }
 
 
@@ -114,30 +114,34 @@ if __name__ == "__main__":
 					services = bluetooth.find_service(address=TargetMACAddress)
 					print(services)
 					print('')
-					print("Do you wish to connect[n for no]")
-					con = raw_input()
+					con = raw_input("Do you wish to connect [n for no]:")
 					if con == "n":
 						continue
 
 					# connect to a chip server 
 					print("connecting to chip server",TargetMACAddress)
-					client = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-					client.connect((TargetMACAddress,BTPortNo))
-					print("connected to ",TargetMACAddress)
-					connected = 1
+					try:
+						client = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
+						client.connect((TargetMACAddress,BTPortNo))
+						print("connected to ",TargetMACAddress)
+						connected = 1
+					except:
+						print("error connecting to device")
+						continue
 
 					# send commands to server
 					while(connected):
-						print("Enter command to be send to server")
-						print("Supported commands: [detectall][initialize][quit]")
-						command = raw_input();
+						print("Enter command")
+						print("Supported commands: [detectall][getinfo][readfrom][writeto][quit]")
+						command = raw_input(">")
 						if command == "quit": # quit command to exit only client
+							client.send('[\"quit\"]')
 							print("closing client")
 							client.close()
 							connected = 0
-							break
-						elif command not in command_list: # inavalid commands
-							print("command not in command list"+"\n")
+							exit()
+#						elif command not in command_list: # inavalid commands
+#							print("command not in command list"+"\n")
 						else: # valid commands
 							try:
 								command_dictionary[command]()

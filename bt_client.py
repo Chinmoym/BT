@@ -10,8 +10,8 @@ from time import sleep
 ###########################################################################################################
 		## Global variables
 BTPortNo = 3
-#TargetMACAddress = 'A0:2C:36:9D:D3:AF' 
-TargetMACAddress = '68:17:29:45:5F:32'
+TargetMACAddress = 'A0:2C:36:9D:D3:AF' 
+#TargetMACAddress = '68:17:29:45:5F:32'
 AddressList = ''
 client = ''
 
@@ -47,7 +47,7 @@ def detectall():
 # syntax : getinfo [device address]
 def getinfo():
 	DeviceAddress = raw_input("Enter device address for device info:")
-	command = '[\"getinfo\",\"'+DeviceAddress+'\"]'
+	command = '[\"getinfo\",'+DeviceAddress+']'
 	client.send(command)
 	DeviceInfo = client.recv(1024)
 	#DeviceInfo = ast.literal_eval(DeviceInfo)
@@ -58,7 +58,7 @@ def getinfo():
 def readfrom():
 	DeviceAddress = raw_input("Enter device address:")
 	RegisterAddress = raw_input("Enter register address:")
-	command = '[\"readfrom\",\"'+DeviceAddress+'\",\"'+RegisterAddress+'\"]'
+	command = '[\"readfrom\",'+DeviceAddress+','+RegisterAddress+']'
 	client.send(command)
 	RegisterValue = client.recv(1024)
 	print(RegisterValue)
@@ -69,7 +69,7 @@ def writeto():
 	DeviceAddress = raw_input("Enter device address:")
 	RegisterAddress = raw_input("Enter register address:")
 	Value = raw_input("Enter value to be written:")
-	command = '[\"writeto\",\"'+DeviceAddress+'\",\"'+RegisterAddress+'\",\"'+Value+'\"]'
+	command = '[\"writeto\",'+DeviceAddress+','+RegisterAddress+','+Value+']'
 	client.send(command)
 	WriteAck = client.recv(1024)
 	print(WriteAck)

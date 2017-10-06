@@ -97,10 +97,13 @@ if __name__ == "__main__":
 			print("Searching for nearby devices...")
 			try:
 				NearbyDevices = bluetooth.discover_devices()
+			except KeyboardInterrupt:
+				exit()
 			except:
 				print("unable to discover device, check your bluetooth settings")
 			print(NearbyDevices)
 	
+			
 			# discover and connect to chip
 			for Address in NearbyDevices:
 				# discover chip based on MAC address
@@ -112,8 +115,11 @@ if __name__ == "__main__":
 				if Address == TargetMACAddress:
 					print("Services available with chip server",TargetMACAddress)
 					services = bluetooth.find_service(address=TargetMACAddress)
-					print(services)
-					print('')
+					for ser in services:
+						if ser['name'] == "Chip device":
+							print ser
+					#print(services)
+					#print('')
 					con = raw_input("Do you wish to connect [n for no]:")
 					if con == "n":
 						continue
@@ -140,8 +146,8 @@ if __name__ == "__main__":
 							client.close()
 							connected = 0
 							exit()
-#						elif command not in command_list: # inavalid commands
-#							print("command not in command list"+"\n")
+						#elif command not in command_list: # inavalid commands
+						#	print("command not in command list"+"\n")
 						else: # valid commands
 							try:
 								command_dictionary[command]()

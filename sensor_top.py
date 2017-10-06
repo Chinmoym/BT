@@ -1,31 +1,24 @@
-import Adafruit_GPIO.I2C as I2C
-import sensor_trial
-import smbus_scan
+import Adafruit_GPIO.I2C as I2C 	# Implementation APIs to read/write I2C registers 
+import sensor_info			# contains list of sensor addresses and corresponding information
+import smbus_scan			# function to scan i2c bus and returs list of connected sensors
 import time
 import sys
 
-device_dictionary =  { 0x77 : 'BMP085'
-}
-
-def get_name(dev_addr):
-	return device_dictionary[dev_addr]
 
 def detectall():
 	return smbus_scan.scan_i2c_bus()
 	
 
 def getinfo(device_addr):
-	if device_addr in device_dictionary:
-		device_name = get_name(device_addr)
-		sensor = getattr(sensor_trial,device_name)		#This will return device information
-		return sensor.info
+	if device_addr in sensor_info.device_dictionary:
+		return sensor_info.device_dictionary[device_addr]
 	else:
 		return "Device Not Found"
 
-def initialize(device_addr):
+"""def initialize(device_addr):
 	device_name = get_name(device_addr)
 	sensor = getattr(sensor_trial,device_name)		#This will initialize the device by loading default calibration
-	return sensor
+	return sensor"""
 
 def readfrom(device_addr,register):
 	try:
@@ -42,27 +35,15 @@ def writeto(device_addr,register,value):
 	except IOError:
 		return "No Device found"
 
-def get_temperature(device_addr):
-	device_name = get_name(device_addr)
-	sensor1 = getattr(sensor_trial,device_name)
-	temperature = sensor1.read_temperature()
-	return temperature
 
-def get_pressure(device_addr):
-	device_name = get_name(device_addr)
-	sensor1 = getattr(sensor_trial,device_name)
-	pressure = sensor1.read_pressure()
-	return pressure
 
 
 ##This is for debugging
 """print(detectall())
-print(get_name(119))
 
 print(getinfo(119))
 time.sleep(1)
-print(initialize(0x77))
-time.sleep(1)
+
 
 print(readfrom(0x77,0xF4))
 time.sleep(0.5)
@@ -75,8 +56,8 @@ for i in range(1,5):
 	writeto(0x77,0xF4,0x2E)
 	print(readfrom(0x77,0xF6))
 	time.sleep(0.5)
-	writeto(0x77,0xF4,0x34)
-        print(readfrom(0x77,0xF6))
+	writeto(0x77,0xF4,0x01)
+        print(readfrom(0x77,0xFF))
         time.sleep(0.5)"""
 		
 

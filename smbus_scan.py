@@ -9,7 +9,7 @@ import sys
 def scan_i2c_bus():
         bus = SMBus(1)
         L = []
-        for i in range(30,127):
+        for i in range(3,127):
                 try:
                         b = bus.read_byte(i)
                         L.append(i)

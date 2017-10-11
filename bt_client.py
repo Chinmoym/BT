@@ -1,19 +1,20 @@
 ############################################################################################################
 		## LIBRARIES
-import bluetooth
-import subprocess #required for chip only
-import ast
-from time import sleep
-
+# In this section all the python library dependencies for working of the code is listed
+import bluetooth						# bluetooh library from PyBluez
+import subprocess 						
+import ast							# for data formatting (string to literals)
+from time import sleep						# for sleep/delay function
 
 
 ###########################################################################################################
 		## Global variables
-BTPortNo = 3
-TargetMACAddress = 'A0:2C:36:9D:D3:AF' 
+# This section contains any global variables used through out the code
+BTPortNo = 3							# BT port no used valid values (1-31)
+TargetMACAddress = 'A0:2C:36:9D:D3:AF'				# server MAC address
 #TargetMACAddress = '68:17:29:45:5F:32'
-AddressList = ''
-client = ''
+AddressList = ''						
+client = ''							# client socket
 
 
 ###########################################################################################################
@@ -23,7 +24,9 @@ client = ''
 subprocess.call(['sudo','hciconfig','hci0','piscan'])
 
 # detectall command
-# sysntax : detectall
+# syntax : detectall
+# usage  : the user sends the string "detectall" from terminal once the code is up, if all valid, a resopose
+# 		with list of I2C device address will be recieved.
 def detectall():
 	command = '[\"detectall\",\"\"]'
 	client.send(command)
@@ -34,17 +37,11 @@ def detectall():
 	#AddressList = ast.literal_eval(AddressList)
 	print(AddressList)	
 
-# initialize command
-# syntax : initialize [address]
-'''def initialize():
-	DeviceAddress = raw_input("Enter address of device to initialize:")
-	command = '["initialize",'+DeviceAddress+']'##################################################################################
-	client.send(command)
-	Ack = client.recv(1024)
-	print Ack
-'''
 # getinfo command
 # syntax : getinfo [device address]
+# usage  : the user first sends "getinfo" from terminal, then another prompt asking for the I2C device
+#		address is given, provide the device address in hex/decimal, an appropriate list of all
+# 		registers of the device is recieved from server
 def getinfo():
 	DeviceAddress = raw_input("Enter device address for device info:")
 	command = '[\"getinfo\",'+DeviceAddress+']'
@@ -55,6 +52,9 @@ def getinfo():
 
 # readform command
 # syntax : readfrom [device address] [register address]
+# usage  : the user first send "readfrom" from terminal, then the user is prompted with two successive 
+#		prompts asking for 'I2C device address' and 'register address' from where you want to read.
+#		On success the register value is recieved.
 def readfrom():
 	DeviceAddress = raw_input("Enter device address:")
 	RegisterAddress = raw_input("Enter register address:")
@@ -65,6 +65,9 @@ def readfrom():
 
 # writeto command
 # syntax: writeto [device address][register address][Value]
+# usage  : the user first send "writeto" from terminal, then the user is prompted with three successive 
+#		prompts asking for 'I2C device address', 'register address' and 'the value' to be wriiten.
+#		On success a write succesful ack is provided.
 def writeto():
 	DeviceAddress = raw_input("Enter device address:")
 	RegisterAddress = raw_input("Enter register address:")
@@ -77,6 +80,8 @@ def writeto():
 
 ##########################################################################################################
 		## command dictionary to lookup
+# this is a dictionary in python which allows us to do a mapping between two values, here we use it to 
+# decode the fucntion from the string recieved from user terminal
 command_dictionary = {   "detectall" 	: detectall, \
 #			"initialize" 	: initialize, \
 			"getinfo"	: getinfo, \
@@ -88,12 +93,13 @@ command_dictionary = {   "detectall" 	: detectall, \
 
 ###########################################################################################################
 		## main function/code
-
+# write your core functioanlity here
+	
 if __name__ == "__main__":
 	
 	try:
 		while(1):
-			# search for BT devices
+			# search for nearby BT devices
 			print("Searching for nearby devices...")
 			try:
 				NearbyDevices = bluetooth.discover_devices()
@@ -104,27 +110,33 @@ if __name__ == "__main__":
 			print(NearbyDevices)
 	
 			
-			# discover and connect to chip
+			# scan through all the available BT devices and if the server MAC is found
+			# then connect to the server
 			for Address in NearbyDevices:
-				# discover chip based on MAC address
+				# this step is just to get the name of the BT device, it is not used
+				# anywhere just for information purpose
 				try:
 					name = bluetooth.lookup_name(Address)
 				except:
 					print("unable to fetch name")
 				print (name,Address,TargetMACAddress)
+				# connect to the server if MAC address is found
 				if Address == TargetMACAddress:
+					# search for the service broadcasted by server
 					print("Services available with chip server",TargetMACAddress)
 					services = bluetooth.find_service(address=TargetMACAddress)
 					for ser in services:
 						if ser['name'] == "Chip device":
-							print ser
-					#print(services)
-					#print('')
-					con = raw_input("Do you wish to connect [n for no]:")
-					if con == "n":
-						continue
+							print ser  # this display only the service with serial_port
+									# the service addtion we did
+									# check the description portion for the device
+									# address
+				
+					#con = raw_input("Do you wish to connect [n for no]:")
+					#if con == "n":
+					#	continue
 
-					# connect to a chip server 
+					# connect to a chip server and create a client socket 
 					print("connecting to chip server",TargetMACAddress)
 					try:
 						client = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
@@ -135,12 +147,14 @@ if __name__ == "__main__":
 						print("error connecting to device")
 						continue
 
-					# send commands to server
+					# once successfully connected provide the user with intearctive facility in
+					# the terminal to send commands to server, refer each command function area
+					# for the syntax of each commands
 					while(connected):
 						print("Enter command")
 						print("Supported commands: [detectall][getinfo][readfrom][writeto][quit]")
 						command = raw_input(">")
-						if command == "quit": # quit command to exit only client
+						if command == "quit": # quit command to exit
 							client.send('[\"quit\"]')
 							print("closing client")
 							client.close()
@@ -155,10 +169,14 @@ if __name__ == "__main__":
 							except KeyboardInterrupt:
 								print("Closing client")
 								client.close()
+								exit()
 							except:
 								print("closing client")
 								client.close()
+								exit()
 	except KeyboardInterrupt:
-		print("exit")
+		print("ctrl^C forced exit")
+		exit()
 	except:
 		print("exit")
+		exit()

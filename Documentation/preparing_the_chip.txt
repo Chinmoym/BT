@@ -1,0 +1,54 @@
+Dependencies
+
+/*This section covers the dependencies for the Bluetooth code to work*/
+
+1. Enable the Bluetooth hardware in the CHIP Pro
+	-> the initial module that we compiled with the kernel didn't worked so we changed our source to enable the BT hardware. 
+	-> we used the following git repository
+		https://github.com/guh/rtl8723ds_bt.git
+	-> instruction to work with the above git repo
+		for on CHIP compilation (for on chip compilation we need the kernel build features so you need to install the build tools)
+		git clone https://github.com/guh/rtl8723ds_bt.git
+		git checkout debian
+		sudo make
+		sudo make install
+		sudo start-rtl-bluetooth (run this process in background / add it to system startup)
+
+		for cross compilation
+			compile with regular compilation method and then copy the following 
+		#     your path				#device path
+		cp -p firmware/rtl8723d_fw 		/lib/firmware/rtlbt
+		cp -p firmware/rtl8723d_config 		/lib/firmware/rtlbt
+		cp -p rtk_hciattach 			/sbin/
+		cp -p scripts/start-rtl-bluetooth	/sbin/
+
+2. Install Python and PyBluez library in the CHIP to access the BT h/w functionality
+				
+3. Adding services to the BT (follow the below steps) this is a one time setup
+	-> open file "/etc/systemd/system/dbus-org.bluez.service" or "/etc/systemd/system/bluetooth.service"
+	-> Change Line "ExecStart=/usr/lib/bluetooth/bluetoothd" to "ExecStart=/usr/lib/bluetooth/bluetoothd --compat" 
+	-> restart the CHIP
+	-> sudo chmod 777 /var/run/sdp
+	-> sdptool add SP
+	-> sdptool browse local --- to check whether your service is added or not
+
+	reference for this section
+		https://raspberrypi.stackexchange.com/questions/41776/failed-to-connect-to-sdp-server-on-ffffff000000-no-such-file-or-directory
+		https://www.bluetooth.com/specifications/gatt/services
+
+4. To make the device discoverable by other add the following
+	sudo hciconfig hci0 piscan
+
+5. Add the I2C adafruit library for python
+
+
+
+
+
+
+
+
+
+
+
+

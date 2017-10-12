@@ -5,6 +5,7 @@ import subprocess #required for chip only
 import ast
 from time import sleep
 from time import time
+import random 
 
 
 ###########################################################################################################
@@ -14,13 +15,28 @@ TargetMACAddress = 'A0:2C:36:9D:D3:AF'
 #TargetMACAddress = '68:17:29:45:5F:32'
 AddressList = ''
 client = ''
+AL = ''
 
+
+flag=0
+DA =0
+DAS = 0
+GI=0
+GIS=0
+RF=0
+RFS=0
+WT=0
+WTS=0
+SCAN=0
+SER=0
+CON=0
 ######################################################################################################
 ######## Variables for performance Analysis
-DeviceAddress = '119'
+DeviceAddress = ['0x77','0x53']
 Read_RegisterAddress = '0xF6'
 Write_RegisterAddress = '0xF4'
 Value = '0x34'
+dev_addr = random.choice(DeviceAddress)
 
 ###########################################################################################################
 		## Command List Performance analysis
@@ -56,17 +72,12 @@ def detectall():
 		print("error recieving")	
 	#s................................
 	end = time()
-	f= open("Time_analysys.txt","a+")
-
-	diff = end - start 
-	f.write("Detectall = %f9 | " %(diff))
-	diff = end_send - start 
-	f.write("Detectall send = %f9 | " %(diff))
-
-	f.close()
+	global DA
+	DA = end - start
+	global DAS 
+	DAS = end_send - start 
 	#e................................
 
-	#AddressList = ast.literal_eval(AddressList)
 	print(AddressList)	
 
 # initialize command
@@ -84,7 +95,8 @@ def getinfo():
 #s...comented for performance measurement
 #	DeviceAddress = raw_input("Enter device address for device info:")
 #e...comment end
-	command = '[\"getinfo\",'+DeviceAddress+']'
+	
+	command = '[\"getinfo\",'+dev_addr+']'
 	#s................................
 	start = time()
 	#e................................
@@ -96,12 +108,10 @@ def getinfo():
 	DeviceInfo = client.recv(1024)
 	#s................................
 	end = time()
-	f= open("Time_analysys.txt","a+")
-	diff = end - start 
-	f.write("Getinfo = %f9 | " %(diff))
-	diff = end_send - start 
-	f.write("Getinfo Send = %f9 | " %(diff))
-	f.close()
+	global GI
+	GI = end - start
+	global GIS 
+	GIS = end_send - start 
 	#e................................
 
 	#DeviceInfo = ast.literal_eval(DeviceInfo)
@@ -114,7 +124,11 @@ def readfrom():
 #	DeviceAddress = raw_input("Enter device address:")
 #	Read_RegisterAddress = raw_input("Enter register address:")
 #e...comment end
-	command = '[\"readfrom\",'+DeviceAddress+','+Read_RegisterAddress+']'
+	if dev_addr == '0x77':
+		Read_RegisterAddress = '0xF6'
+	else:
+		Read_RegisterAddress = '0x1F'
+	command = '[\"readfrom\",'+dev_addr+','+Read_RegisterAddress+']'
 	#s................................
 	start = time()
 	#e................................
@@ -129,12 +143,10 @@ def readfrom():
 
 	#s................................
 	end = time()
-	f= open("Time_analysys.txt","a+")
-	diff = end - start 
-	f.write("Readfrom = %f9 | " %(diff))
-	diff = end_send - start 
-	f.write("Readfrom Send = %f9 | " %(diff))
-	f.close()
+	global RF
+	RF = end - start
+	global RFS 
+	RFS = end_send - start 
 	#e................................
 	print(RegisterValue)
 
@@ -146,7 +158,14 @@ def writeto():
 #	Write_RegisterAddress = raw_input("Enter register address:")
 #	Value = raw_input("Enter value to be written:")
 #e...comment end
-	command = '[\"writeto\",'+DeviceAddress+','+Write_RegisterAddress+','+Value+']'
+	
+	if dev_addr == '0x77':
+		Write_RegisterAddress = '0xF4'
+		value = '0x34'
+	else:
+		Write_RegisterAddress = '0x1F'
+		value = '0x01'
+	command = '[\"writeto\",'+dev_addr+','+Write_RegisterAddress+','+Value+']'
 	#s................................
 	start = time()
 	#e................................
@@ -157,13 +176,10 @@ def writeto():
 	WriteAck = client.recv(1024)
 	#s................................
 	end = time()
-	f= open("Time_analysys.txt","a+")
-
-	diff = end - start 
-	f.write("Writeto = %f9 | " %(diff))
-	diff = end_send - start 
-	f.write("Writeto send= %f9\n " %(diff))
-	f.close()
+	global WT
+	WT = end - start
+	global WTS
+	WTS = end_send - start 
 	#e................................
 	print(WriteAck)
 
@@ -198,15 +214,16 @@ if __name__ == "__main__":
 				
 				#s................................
 				end = time()
-				diff = end - start 
-				f= open("Time_analysys.txt","a+")
-				f.write("Scan= %f9 | " %(diff))
-				f.close()
+				SCAN = end - start 
 				#e................................
 			except KeyboardInterrupt:
 				exit()
 			except:	
 				print("unable to discover device, check your bluetooth settings")
+				f= open("cli_70:77:81:99:D1:7C.txt","a+")
+				f.write("-1|%f|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1\n " %(SCAN))
+				f.close()
+
 			print(NearbyDevices)
 	
 			# discover and connect to chip
@@ -216,8 +233,13 @@ if __name__ == "__main__":
 					name = bluetooth.lookup_name(Address)
 				except:
 					print("unable to fetch name")
+					f= open("cli_70:77:81:99:D1:7C.txt","a+")
+					f.write("%f|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1\n " %(SCAN))
+					f.close()
+
 				print (name,Address,TargetMACAddress)
 				if Address == TargetMACAddress:
+					flag = 1
 					print("Services available with chip server",TargetMACAddress)
 					#s................................
 					start = time()
@@ -226,18 +248,10 @@ if __name__ == "__main__":
 					services = bluetooth.find_service(address=TargetMACAddress)
 					#s................................
 					end = time()
-					diff = end - start 
-					f= open("Time_analysys.txt","a+")
-					f.write("Service List= %f9 | " %(diff))
-					f.close()
+					SER = end - start 
 					#e................................
 
 					print(services)
-					#s.....Commented nxt 3 lines for Performance analysis
-#					con = raw_input("Do you wish to connect [n for no]:")
-#					if con == "n":
-#						continue
-					#e......Comments end
 
 					# connect to a chip server 
 					print("connecting to chip server",TargetMACAddress)
@@ -250,16 +264,14 @@ if __name__ == "__main__":
 						client.connect((TargetMACAddress,BTPortNo))
 						#s................................
 						end = time()
-						diff = end - start 
-						f= open("Time_analysys.txt","a+")
-						f.write("Connect= %f9 | " %(diff))
-						f.close()
+						CON = end - start 
 						#e................................
 
 						print("connected to ",TargetMACAddress)
 						connected = 1
 					except:
 						print("error connecting to device")
+
 						continue
 
 					# send commands to server
@@ -272,15 +284,7 @@ if __name__ == "__main__":
 #s.............................................................
 						for command in command_list:
 #added Indent till else ends
-							if command == "quit": # quit command to exit only client
-								client.send('[\"quit\"]')
-								print("closing client")
-								client.close()
-								connected = 0
-								exit()
-#							elif command not in command_list: # inavalid commands
-#								print("command not in command list"+"\n")
-							else: # valid commands
+							if command != 'quit': # valid commands
 								try:
 									command_dictionary[command]()
 									sleep(1)
@@ -290,8 +294,54 @@ if __name__ == "__main__":
 								except:
 									print("closing client")
 									client.close()
+							if command == 'quit': # quit command to exit only client
+								client.send('[\"quit\"]')
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%s|" %(dev_addr))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(SCAN))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(SER))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(CON))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(DA))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(GI))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(RF))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(WT))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(DAS))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(GIS))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f|" %(RFS))
+								f = open("cli_70:77:81:99:D1:7C.txt","a+")
+								f.write("%f\n" %(WTS))
+								#f.write("%f | %f | %f | %f | %f | %f | %f | %f | %f | %f | %f | %f\n" %(DeviceAddress) %(SCAN) %(SER) %(CON) %(DA) %(GI) %(RF) %(WT) %(DAS) %(GIS) %(RFS) %(WTS))
+								f.close()
+
+								print("closing client")
+								client.close()
+								connected = 0
+
+								exit()
+#							elif command not in command_list: # inavalid commands
+#								print("command not in command list"+"\n")
+			if flag ==0:
+				f= open("cli_70:77:81:99:D1:7C.txt","a+")
+				f.write("-1|%f|-1|-1|-1|-1|-1|-1|-1|-1|-1|-1\n" %(SCAN))
+				f.close()
+
+						
+
 #e............................................................
 	except KeyboardInterrupt:
 		print("exit")
+		exit()
 	except:
 		print("exit")
+		print "exit"
+		exit()

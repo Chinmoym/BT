@@ -5,21 +5,26 @@ import time
 import sys
 
 
+""" return : List of i2c devices connected to i2c-1 bus
+"""
 def detectall():
 	return smbus_scan.scan_i2c_bus()
-	
 
+	
+""" 	device_addr : i2c device address
+	return      : information about device i.e., name, important registers
+"""	
 def getinfo(device_addr):
 	if device_addr in sensor_info.device_dictionary:
-		return sensor_info.device_dictionary[device_addr]
+		return sensor_info.device_dictionary[device_addr]			
 	else:
-		return "Device Not Found"
+		return "No information available"
+		
 
-"""def initialize(device_addr):
-	device_name = get_name(device_addr)
-	sensor = getattr(sensor_trial,device_name)		#This will initialize the device by loading default calibration
-	return sensor"""
-
+"""	device_addr : i2c device address
+	register    : register of <device_addr> from which data to be read
+	return      : read data
+"""
 def readfrom(device_addr,register):
 	try:
 		device = I2C.get_i2c_device(device_addr)
@@ -28,6 +33,10 @@ def readfrom(device_addr,register):
 	except IOError:
 		return "No Device Found"
 
+
+"""	device_addr : i2c device address
+	register    : register of <device_addr> into which data to be written
+"""
 def writeto(device_addr,register,value):
 	try:
 		device = I2C.get_i2c_device(device_addr)
@@ -39,25 +48,20 @@ def writeto(device_addr,register,value):
 
 
 ##This is for debugging
-"""print(detectall())
-
-print(getinfo(119))
-time.sleep(1)
-
-
-print(readfrom(0x77,0xF4))
-time.sleep(0.5)
-
-writeto(0x77,0xF4,0x2E)
-time.sleep(0.5)
+	
+"""print("This is debugging")
+print(detectall())
 
 for i in range(1,5):
-	print('------------------')
-	writeto(0x77,0xF4,0x2E)
-	print(readfrom(0x77,0xF6))
-	time.sleep(0.5)
-	writeto(0x77,0xF4,0x01)
-        print(readfrom(0x77,0xFF))
-        time.sleep(0.5)"""
-		
+	command		= raw_input('Command:')
+	if command == "quit":
+		break
 
+	device_addr     = raw_input('Device address:')
+        reg_addr        = raw_input('Register address:')
+	if command == 'writeto':
+		data 	= raw_input('write Data:')
+		writeto(int(device_addr),int(reg_addr),int(data))
+	
+	print(readfrom(int(device_addr),int(reg_addr)))"""
+		                

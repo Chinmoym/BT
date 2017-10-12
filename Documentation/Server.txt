@@ -1,0 +1,26 @@
+Server side dependencies:
+	1. Adafruit GPIO library: https://github.com/adafruit/Adafruit_Python_GPIO/
+	2. SMbus 0.1.2 library  : https://pypi.python.org/pypi/smbus2/0.1.2
+
+Understanding fuctions:
+Here,consider two I2C sensors, ADXL345(Acclerometer) and BMP085(Temperature Pressure 
+Sensor) are interfaced to C.H.I.P. 
+
+ 1. detectall(): 
+	This returns the list of addresses of devices connected to I2C-1 bus.  
+	Ex. If two sensors, ADXL345 and BMP085 are interfaced, it returns [83,119].
+	
+ 2. getinfo(device_address): 
+	Provided address of the device,this returns information stored about that device
+	in the device dictionary.
+	Ex. getinfo(119) returns a string which has device_name and important registers.
+
+ 3. readfrom(device_address,register_address): 
+	This returns the value read from <register_address> of <device_address>.
+	Ex. readfrom(0x53, 0x1E) returns value of x_offset register of ADXL345.
+	Error: If the <device_address> is not connected, it returns "No Device found".
+ 
+ 4. writeto(device_address,register_address,value):
+	This writes the <value> to <register_address> of <device_address>.
+	Ex. writeto(0x53, 0x1E, 32) updates the value of x_offset register of ADXL345 to 32.
+	Error: If <device_address> is not connected, it returns "No Device Found".

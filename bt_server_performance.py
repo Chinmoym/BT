@@ -268,7 +268,7 @@ if __name__ == "__main__":
 				pass
 				#client.close()
 	except KeyboardInterrupt:
-		prt("Shuttig down...")
+		print("Shuttig down...")
 		client.close()
 		server.close()		
 	except:

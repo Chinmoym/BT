@@ -41,6 +41,7 @@ def writeto(device_addr,register,value):
 	try:
 		device = I2C.get_i2c_device(device_addr)
 		device.write8(register,value)
+		return "Write Successful"
 	except IOError:
 		return "No Device found"
 

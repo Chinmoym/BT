@@ -1,11 +1,10 @@
-#This function scans i2c bus i2c-1 and
-#gives returs list of devices connected to it.
+#This function scans i2c bus i2c-1.
 
 from smbus2 import SMBus
 import sys
 
-# Open i2c bus 1 and read one byte from address 80, offset 0
-
+"""return : List of i2c devices connected to i2c-1 bus.
+"""
 def scan_i2c_bus():
         bus = SMBus(1)
         L = []

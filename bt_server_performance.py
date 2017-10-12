@@ -16,6 +16,19 @@ ServerOn = 1
 client = ''
 connected = 0
 
+DA =0
+DAS = 0
+I2CDA=0
+GI=0
+GIS=0
+I2CGI=0
+RF=0
+RFS=0
+I2CRF=0
+WT=0
+WTS=0
+I2CWT=0
+
 ############################################################################################################
 		## functions and utilities
 
@@ -49,15 +62,12 @@ def detectall(x,client): # detectall command
                 pass
         #s................................
         end = time()
-        f= open("Time_analysys.txt","a+")
-        diff = end - start
-        f.write("Detectall = %f9 | " %(diff))
-        diff = end_I2c - start
-        f.write("I2c Detectall = %f9 | " %(diff))
-        diff = end_send - start_send
-        f.write("Send Responce Detectall = %f9 | " %(diff))
-        
-        f.close()
+        global DA
+        DA = end - start
+        global I2CDA
+        I2CDA = end_I2c - start
+        global DAS
+        DAS = end_send - start_send
         #e................................
 
 def getinfo(x,client): # getinfo command
@@ -85,15 +95,12 @@ def getinfo(x,client): # getinfo command
                 pass
         #s................................
         end = time()
-        f= open("Time_analysys.txt","a+")
-        diff = end - start
-        f.write("Getinfo = %f9 | " %(diff))
-        diff = end_I2c - start
-        f.write("I2c Getinfo = %f9 | " %(diff))
-        diff = end_send - start_send
-        f.write("Send Responce Getinfo = %f9 | " %(diff))
-        
-        f.close()
+        global GI
+        GI = end - start
+        global I2CGI
+        I2CGI = end_I2c - start
+        global GIS
+        GIS = end_send - start_send
         #e................................
 
 def readfrom(x,client):
@@ -123,15 +130,12 @@ def readfrom(x,client):
                 pass
         #s................................
         end = time()
-        f= open("Time_analysys.txt","a+")
-        diff = end - start
-        f.write("Readfrom = %f9 | " %(diff))
-        diff = end_I2c - start
-        f.write("I2c Readfrom = %f9 | " %(diff))
-        diff = end_send - start_send
-        f.write("Send Responce Readfrom = %f9 | " %(diff))
-        
-        f.close()
+        global RF
+        RF = end - start
+        global I2CRF
+        I2CRF = end_I2c - start
+        global RFS
+        RFS = end_send - start_send
         #e................................
 
 
@@ -162,19 +166,16 @@ def writeto(x,client):
                 pass
         #s................................
         end = time()
-        f= open("Time_analysys.txt","a+")
-        diff = end - start
-        f.write("Writeto = %f9 | " %(diff))
-        diff = end_I2c - start
-        f.write("I2c Writeto = %f9 | " %(diff))
-        diff = end_send - start_send
-        f.write("Send Responce Writeto = %f9\n" %(diff))
-        
-        f.close()
+        global WT
+        WT = end - start
+        global I2CWT
+        I2CWT = end_I2c - start
+        global WTS
+        WTS = end_send - start_send
         #e................................
 
 def quit__():
-	client.close()
+	print "quit"        
 	
 
 
@@ -185,7 +186,7 @@ command_dictionary = {	"detectall"	: detectall, \
 			"getinfo"	: getinfo, \
 			"readfrom"	: readfrom, \
 			"writeto"	: writeto, \
-			"quit"		: quit__
+			"quit"		: quit__\
 			}
 
 ###########################################################################################################
@@ -194,11 +195,39 @@ command_dictionary = {	"detectall"	: detectall, \
 def new_client(threadname,delay,client,client_info):
         try:
                 print(client,client_info)
+                filename = "ser_" + client_info[0] + ".txt"
                 while True:
                         RxData = client.recv(1024)
                         RxData = ast.literal_eval(RxData)
                         print(client_info,"Recieved command:",RxData)
+                        if RxData[0] == "quit":
+                                f = open(filename,"a+")
+                                f.write("%f|" %(DA))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(GI))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(RF))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(WT))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(I2CDA))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(I2CGI))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(I2CRF))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(I2CWT))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(DAS))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(GIS))
+                                f = open(filename,"a+")
+                                f.write("%f|" %(RFS))
+                                f = open(filename,"a+")
+                                f.write("%f\n" %(WTS))
+                                f.close()
                         command_dictionary[RxData[0]](RxData,client)
+
         except:
                 pass
 
@@ -239,10 +268,16 @@ if __name__ == "__main__":
 				pass
 				#client.close()
 	except KeyboardInterrupt:
-		print("Shuttig down...")
+		prt("Shuttig down...")
 		client.close()
 		server.close()		
 	except:
 		print("exit")
 		client.close()
 		server.close()
+
+
+
+
+
+

@@ -1,0 +1,39 @@
+Client side dependencies:
+	See "Preparing the Chip"
+
+
+Client Operation
+	Here the client send server with some predefined commands to control the behaviour
+	of a sensor device. The user is prompted to enter different command.
+	
+	Commands 
+		1. detectall
+		syntax: detectall 
+		This receives a list of addresses of devices connected to I2C bus in server.  
+		Ex.[83,119].
+	
+		2. getinfo (device_address)
+		syntax: getinfo
+			enter the device_Address 
+		This receives register information of the device_Address specified
+
+		3. readfrom (device_address,register_address)
+		syntax: readfrom
+			enter device_address
+			enter register_address
+		This receives the value read from <register_address> of <device_address>.
+		Ex. readfrom(0x53, 0x1E) returns value of x_offset register of ADXL345.
+		Error: If the <device_address> is not connected, it returns "No Device found".
+ 
+		4. writeto(device_address,register_address,value)
+		syntax: writeto
+			enter device_address
+			enter register_address
+			enter value to be written
+		This writes the <value> to <register_address> of <device_address>.
+		Ex. writeto(0x53, 0x1E, 32) updates the value of x_offset register of ADXL345 to 32.
+		Error: If <device_address> is not connected, it returns "No Device Found".
+	
+		5. quit:
+		syntax: quit
+		This closes the client operation at both end.

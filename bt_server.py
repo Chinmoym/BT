@@ -21,18 +21,19 @@ connected = 0
 #make the bluetooth device discoverable (onlt in chip)
 subprocess.call(['sudo','hciconfig','hci0','piscan'])
 
+""" 	x	: received command
+    	client	: client from which <x> is sent
+	*Sends the the result as a string to the <client>*
+"""
 def detectall(x,client): # detectall command
-	#print(x,"ok1")
 	data = sensor_top.detectall()
-	#print(data)
 	TxData = '[\"'+str(data)+'\"]'
-	#print(TxData)
 	try:
 		client.send(TxData)
 	except:
 		print("error sending reply")
 		pass
-
+	
 def getinfo(x,client): # getinfo command
 	data = sensor_top.getinfo(x[1])
 	TxData = '[\"'+data+'\"]'
@@ -55,8 +56,8 @@ def readfrom(x,client):
 		pass
 
 def writeto(x,client):
-	sensor_top.writeto(x[1],x[2],x[3])
-	TxData = '[\"write successfull\"]'
+	data = sensor_top.writeto(x[1],x[2],x[3])
+	TxData = '[\"data\"]'
 	try:
 		client.send(TxData)
 	except:

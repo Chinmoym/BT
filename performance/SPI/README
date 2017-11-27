@@ -1,2 +1,3 @@
 SPI performance log
 Performance file name : _cpuload_niceness
+file format : 'transfer time'

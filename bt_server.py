@@ -57,7 +57,7 @@ def readfrom(x,client):
 
 def writeto(x,client):
 	data = sensor_top.writeto(x[1],x[2],x[3])
-	TxData = '[\"data\"]'
+	TxData = '[\"' + data + '\"]'
 	try:
 		client.send(TxData)
 	except:

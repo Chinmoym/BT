@@ -5,7 +5,7 @@ from os import nice
 
 
 spi=SPI_configure()
-to_send_adc_ch0=[0xD0,0x00]
+to_send_adc_ch0=[0xD0,0x00]		#Transfer from adc channel-0
 ##########################................0%CPU.................############################
 
 filename = "_0_20n"

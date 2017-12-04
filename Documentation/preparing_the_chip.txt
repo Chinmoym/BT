@@ -41,10 +41,10 @@ Dependencies
 
 5. Add the I2C adafruit library for python
 
-
-
-
-
+6. To enable SPI,
+	Inatall CHIP_IO library from :
+		https://github.com/xtacocorex/CHIP_IO
+	This has SPI overlaymanager and GPIO related functions.
 
 
 

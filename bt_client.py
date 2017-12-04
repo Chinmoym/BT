@@ -168,10 +168,8 @@ if __name__ == "__main__":
 								sleep(1)
 							except KeyboardInterrupt:
 								print("Closing client")
-								client.close()
-								exit()
 							except:
-								print("closing client")
+								print("Incorrect command")
 								client.close()
 								exit()
 	except KeyboardInterrupt:

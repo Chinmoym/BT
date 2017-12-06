@@ -1,0 +1,20 @@
+# Bluetooth
+1. Measure the time taken for scanning nearby devices, searching for the peer and connecting to the peer.
+2. Measure the total response time to get result after sending each command from the client. Here, command 
+   refers to 'detectall', 'readfrom', 'writeto'...
+3. Measure the absolute time taken in the server to execute a command inside server hardware.
+4. Repeat steps 1, 2 and 3 for 200 times.
+5. Calculate average values for timings obtained from 200 runs.
+
+#I2C (varying priority and CPU load)
+1.Varying CPU load: Keep the CPU load at 0%, 50%, 90% and >90% when I2C functions are called.To increase
+  the CPU load, call a background proccess which will run a loop to waste CPU time.Choose a particular 
+  count for each load. Check CPU load using 'htop' utility. (Refer to _<load_percentage>.py files)
+
+2.Varying process priority: Change priority levels of the process which is calling I2C functions. Keep
+  priority at -20,-10,0,10,20. nice(inc) syscall adds inc to the current priority of the calling process. 
+
+3. Collect measured time for all combination of CPU load and priority. (Refer to file I2C_timing_analysis.py) 
+
+#SPI (vwrying priority and CPU load)
+1. Perform same step as I2C for SPI_transfer function. (refer to spi_measure.py)

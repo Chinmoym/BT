@@ -14,7 +14,8 @@
 2.Varying process priority: Change priority levels of the process which is calling I2C functions. Keep
   priority at -20,-10,0,10,20. nice(inc) syscall adds inc to the current priority of the calling process. 
 
-3. Collect measured time for all combination of CPU load and priority. (Refer to file I2C_timing_analysis.py) 
+3. Measure the tme taken by each I2C functions for all combination of CPU load and priority.
+4. Coolect and analyze results. (Refer to file I2C_timing_analysis.py) 
 
-#SPI (vwrying priority and CPU load)
-1. Perform same step as I2C for SPI_transfer function. (refer to spi_measure.py)
+#SPI (varying priority and CPU load)
+1. Perform same steps as I2C for SPI_transfer function. (refer to spi_measure.py)

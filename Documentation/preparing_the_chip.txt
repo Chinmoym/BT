@@ -39,9 +39,12 @@ Dependencies
 4. To make the device discoverable by other add the following
 	sudo hciconfig hci0 piscan
 
-5. Add the I2C adafruit library for python
+5. Add the I2C adafruit library for python:
+	https://github.com/adafruit/Adafruit_Python_GPIO
 
 6. To enable SPI,
+	Add device tree source files in /arch/arm/boot/dts :
+		https://bbs.nextthing.co/t/building-spi-into-the-chip-pro-kernel/16159
 	Inatall CHIP_IO library from :
 		https://github.com/xtacocorex/CHIP_IO
 	This has SPI overlaymanager and GPIO related functions.
